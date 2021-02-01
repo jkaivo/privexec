@@ -1,1 +1,4 @@
 *.o
+check/check
+exec/exec
+privexec/privexec
