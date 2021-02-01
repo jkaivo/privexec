@@ -8,7 +8,7 @@ CC=c99
 LD=$(CC)
 CFLAGS=-Wall -Wextra -Wpedantic -Werror -g
 LDFLAGS=
-LDLIBS=
+LDLIBS=-lpam -lpam_misc
 SRCDIR=.
 OBJDIR=.
 BINDIR=$(OBJDIR)
@@ -22,6 +22,11 @@ $(BINDIR)/check: $(OBJDIR)/parse.o
 $(OBJDIR)/parse.o: $(SRCDIR)/check.h
 $(OBJDIR)/parse.o: $(SRCDIR)/parse.c
 	$(CC) $(CFLAGS) -o $@ -c $(SRCDIR)/parse.c
+
+$(BINDIR)/check: $(OBJDIR)/pam.o
+$(OBJDIR)/pam.o: $(SRCDIR)/check.h
+$(OBJDIR)/pam.o: $(SRCDIR)/pam.c
+	$(CC) $(CFLAGS) -o $@ -c $(SRCDIR)/pam.c
 
 $(BINDIR)/check: $(OBJDIR)/check.o
 $(OBJDIR)/check.o: $(SRCDIR)/check.h

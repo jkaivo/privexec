@@ -27,13 +27,6 @@ void fatal(int include_errno, char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
-static int authenticate(const char *user)
-{
-	printf("need to authenticate\n");
-	(void)user;
-	return 1;
-}
-
 static char *get_username(void)
 {
 	struct passwd *pwd = getpwuid(getuid());
