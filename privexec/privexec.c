@@ -1,8 +1,15 @@
 #define _POSIX_C_SOURCE 200809L
+#include <limits.h>
 #include <spawn.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
+#include <string.h>
 #include <unistd.h>
+
+#ifndef ARG_MAX
+#define ARG_MAX _POSIX_ARG_MAX
+#endif
 
 #ifndef PATH_CHECK
 #define PATH_CHECK	"/usr/local/lib/privexec/check"
@@ -10,6 +17,10 @@
 
 #ifndef PATH_EXEC
 #define PATH_EXEC	"/usr/local/lib/privexec/exec"
+#endif
+
+#ifndef DEFAULT_PATH
+#define DEFAULT_PATH	"/bin:/usr/bin"
 #endif
 
 static int exec_with_privileges(char *argv[])
@@ -64,6 +75,12 @@ int main(int argc, char *argv[])
 	}
 
 	if (check_privileges(argv) == 0) {
+		char path[ARG_MAX];
+		if (confstr(_CS_PATH, path, sizeof(path)) < 1) {
+			strcpy(path, DEFAULT_PATH);
+		}
+		setenv("PATH", path, 1);
+
 		return exec_with_privileges(argv);
 	}
 
