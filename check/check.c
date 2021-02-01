@@ -27,8 +27,9 @@ void fatal(int include_errno, char *fmt, ...)
 	exit(EXIT_FAILURE);
 }
 
-static int authorize(const char *user)
+static int authenticate(const char *user)
 {
+	printf("need to authenticate\n");
 	(void)user;
 	return 1;
 }
@@ -39,7 +40,6 @@ static char *get_username(void)
 	if (pwd == NULL) {
 		fatal(1, "unable to determine user name");
 	}
-	printf("checking for user %s\n", pwd->pw_name);
 	return pwd->pw_name;
 }
 
@@ -49,7 +49,6 @@ static char *get_groupname(void)
 	if (grp == NULL) {
 		fatal(1, "unable to determine group name");
 	}
-	printf("checking for group %s\n", grp->gr_name);
 	return grp->gr_name;
 }
 
@@ -59,7 +58,6 @@ static char *get_command(int argc, char *argv[])
 		fatal(1, "missing operands");
 	}
 
-	printf("checking command %s\n", argv[1]);
 	return argv[1];
 }
 
@@ -73,13 +71,12 @@ int main(int argc, char *argv[])
 	char *group = get_groupname();
 
 	switch (get_permission(user, group, cmd)) {
-	case NEED_AUTH:
-		if (authorize(user) != 0) {
-			fatal(0, "bad authorization");
+	case AUTHENTICATE:
+		if (authenticate(user) != 0) {
+			fatal(0, "bad authentication");
 		}
 		/* FALLTHRU */
-	case NO_AUTH:
-		puts("granted");
+	case AUTHORIZED:
 		return 0;
 
 	case DENIED:
