@@ -30,7 +30,7 @@ static int check_privileges(char *argv[])
 	}
 
 	int status = 1;
-	if (waitpid(pid, &status, 0) != 0) {
+	if (waitpid(pid, &status, 0) == -1) {
 		perror(PATH_CHECK);
 		return 1;
 	}
