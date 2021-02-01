@@ -1,0 +1,32 @@
+.POSIX:
+
+PRIVEXECBINDIR=/usr/local/bin
+PRIVEXECDIR=/usr/local/lib/privexec
+PRIVEXECGROUP=_privexec
+
+all:
+	cd check; make
+	cd exec; make
+	cd privexec; make
+
+install: all
+	mkdir -p $(PRIVEXECDIR)
+	cp -f check/check $(PRIVEXECDIR)
+	strip $(PRIVEXECDIR)/check
+	chown root:$(PRIVEXECGROUP) $(PRIVEXECDIR)/check
+	chmod 550 $(PRIVEXECDIR)/check
+
+	cp -f exec/exec $(PRIVEXECDIR)
+	strip $(PRIVEXECDIR)/exec
+	chown root:$(PRIVEXECGROUP) $(PRIVEXECDIR)/exec
+	chmod 4550 $(PRIVEXECDIR)/exec
+
+	cp -f privexec/privexec $(PRIVEXECBINDIR)
+	strip $(PRIVEXECBINDIR)/privexec
+	chown root:$(PRIVEXECGROUP) $(PRIVEXECBINDIR)/privexec
+	chmod 2555 $(PRIVEXECBINDIR)/privexec
+
+clean:
+	cd check; make clean
+	cd exec; make clean
+	cd privexec; make clean
