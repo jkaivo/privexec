@@ -35,3 +35,26 @@ casual inspection of which accounts are allowed to elevate privileges), and
 is the location of all complexity. It is responsible for parsing
 `/etc/privexec.conf` and determining whether the given user is authorized to
 run the given command.
+
+Configuration is done via `/etc/privexec.conf`. The format is intentionally
+strict. Each may be blank, a comment (beginning with a '#' character in the
+first column), or a directive. Directives are of the form:
+
+    <keyword> <principal> [command]
+
+Where `<keyword>` is one of `authorized`, `authenticate`, or `deny`;
+`<principal>` is either a username or a group name prepended with ':', and
+`[command]` is an optional command. Tokens must be separated by exactly one
+space. Additional white space is not allowed.
+
+The entire configuration file is parsed whenever `privexec` invokes `check`.
+Any syntax errors will result in failure. Privilege checking is performed so
+as to be most restrictive. In order from least to most:
+
+    `authorized` - The user is authorized to execute the associate command
+    without further interaction.
+
+    `authenticate` - The user must authenticate themself before the command
+    is executed. This is handled by PAM with the service name `privexec`.
+
+    `deny` - The user is not permitted to execute the command.
