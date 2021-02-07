@@ -58,3 +58,20 @@ as to be most restrictive. In order from least to most:
     is executed. This is handled by PAM with the service name `privexec`.
 
     `deny` - The user is not permitted to execute the command.
+
+A user name match has higher precedence than a group match, and a match
+containing a program name has higher precedence than a match without the
+program name. So the total ordering of precedence (from least to most) is:
+
+    authorized :group
+    authenticate :group
+    deny :group
+    authorized :group command
+    authenticate :group command
+    deny :group command
+    authorized user
+    authenticate user
+    deny user
+    authorized user command
+    authenticate user command
+    deny user command
