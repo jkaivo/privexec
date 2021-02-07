@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 		return NOT_RUN;
 	}
 
+	setuid(geteuid());
 	execvp(argv[1], argv + 1);
 	fprintf(stderr, "%s: %s: %s\n", argv[0], argv[1], strerror(errno));
 	if (errno == ENOENT) {
