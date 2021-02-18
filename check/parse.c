@@ -7,36 +7,36 @@
 
 static enum permission eval(const char *keyword, const char *principal, const char *cmd, const char *user, const char *group, const char *command)
 {
-	int pmatch = 0;
+	enum permission_principal pp = 0;
 	if (!strcmp(user, principal)) {
-		pmatch = 1;
-	}
-	if (principal[0] == ':' && !strcmp(group, principal + 1)) {
-		pmatch = 1;
-	}
-
-	int cmatch = 0;
-	if (cmd == NULL || !strcmp(cmd, command)) {
-		cmatch = 1;
+		pp = PERM_USER;
+	} else if (principal[0] == ':' && !strcmp(group, principal + 1)) {
+		pp = PERM_GROUP;
 	}
 
+	enum permission_command pc = 0;
+	if (cmd == NULL) {
+		pc = PERM_ALL;
+	} else if (!strcmp(cmd, command)) {
+		pc = PERM_CMD;
+	}
+
+	enum permission_keyword pk = 0;
 	if (!strcmp(keyword, "authorize")) {
-		if (cmatch && pmatch) {
-			return AUTHORIZED;
-		}
+		pk = PERM_PASS;
 	} else if (!strcmp(keyword, "authenticate")) {
-		if (cmatch && pmatch) {
-			return AUTHENTICATE;
-		}
+		pk = PERM_AUTH;
 	} else if (!strcmp(keyword, "deny")) {
-		if (cmatch && pmatch) {
-			return DENIED;
-		}
+		pk = PERM_DENY;
 	} else {
 		fatal(0, "invalid keyword: %s", keyword);
 	}
 
-	return UNKNOWN;
+	if (pp == 0 || pc == 0) {
+		return UNKNOWN;
+	}
+
+	return pp | pc | pk;
 }
 
 enum permission get_permission(const char *user, const char *group, const char *command)
@@ -76,7 +76,7 @@ enum permission get_permission(const char *user, const char *group, const char *
 		}
 
 		enum permission tmp = eval(keyword, principal, cmd, user, group, command);
-		/* only increase, so deny trumps authenticate, which trumps authorize */
+		/* only change if a higher precedence is found */
 		if (tmp > perm) {
 			perm = tmp;
 		}

@@ -69,7 +69,10 @@ int main(int argc, char *argv[])
 		user, group, cmd);
 
 	switch (get_permission(user, group, cmd)) {
-	case AUTHENTICATE:
+	case AUTH_GROUP_ALL:
+	case AUTH_GROUP_CMD:
+	case AUTH_USER_ALL:
+	case AUTH_USER_CMD:
 		syslog(LOG_INFO, "%s:%s requires authentication to run %s",
 			user, group, cmd);
 		if (authenticate(user) != 0) {
@@ -78,12 +81,19 @@ int main(int argc, char *argv[])
 			fatal(0, "bad authentication");
 		}
 		/* FALLTHRU */
-	case AUTHORIZED:
+
+	case PASS_GROUP_ALL:
+	case PASS_GROUP_CMD:
+	case PASS_USER_ALL:
+	case PASS_USER_CMD:
 		syslog(LOG_INFO, "%s:%s authorized to run %s",
 			user, group, cmd);
 		return 0;
 
-	case DENIED:
+	case DENY_GROUP_ALL:
+	case DENY_GROUP_CMD:
+	case DENY_USER_ALL:
+	case DENY_USER_CMD:
 		syslog(LOG_NOTICE,
 			"%s:%s explicitly denied permission to run %s",
 			user, group, cmd);
