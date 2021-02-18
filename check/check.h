@@ -9,6 +9,10 @@
 #define PAM_SERVICE_NAME	"privexec"
 #endif
 
+#ifndef PRIVEXEC_LOG_ID
+#define PRIVEXEC_LOG_ID		"privexec"
+#endif
+
 enum permission { UNKNOWN, AUTHORIZED, AUTHENTICATE, DENIED };
 
 void fatal(int include_errno, char *fmt, ...);

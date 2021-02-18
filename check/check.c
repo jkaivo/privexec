@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 700
 #include <errno.h>
 #include <grp.h>
 #include <locale.h>
@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 #include <pwd.h>
 #include <unistd.h>
 
@@ -63,21 +64,37 @@ int main(int argc, char *argv[])
 	char *user = get_username();
 	char *group = get_groupname();
 
+	openlog(PRIVEXEC_LOG_ID, LOG_PID, LOG_AUTH);
+	syslog(LOG_INFO, "checking %s:%s for permission to run %s",
+		user, group, cmd);
+
 	switch (get_permission(user, group, cmd)) {
 	case AUTHENTICATE:
+		syslog(LOG_INFO, "%s:%s requires authentication to run %s",
+			user, group, cmd);
 		if (authenticate(user) != 0) {
+			syslog(LOG_NOTICE, "%s:%s failed authentication for %s",
+				user, group, cmd);
 			fatal(0, "bad authentication");
 		}
 		/* FALLTHRU */
 	case AUTHORIZED:
+		syslog(LOG_INFO, "%s:%s authorized to run %s",
+			user, group, cmd);
 		return 0;
 
 	case DENIED:
+		syslog(LOG_NOTICE,
+			"%s:%s explicitly denied permission to run %s",
+			user, group, cmd);
 		fatal(0, "explicitly denied");
 		return 1;
 	
 	case UNKNOWN:
 	default:
+		syslog(LOG_NOTICE,
+			"%s:%s denied permission to run %s by default",
+			user, group, cmd);
 		fatal(0, "denied by default");
 	}
 
