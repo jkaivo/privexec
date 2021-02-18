@@ -25,7 +25,7 @@ void log_execution(int argc, char *argv[])
 	}
 
 	openlog(PRIVEXEC_LOG_ID, LOG_PID, LOG_AUTH);
-	syslog(LOG_INFO, "UID %jd running \"%s\"", (intmax_t)getuid(), cmd);
+	syslog(LOG_INFO, "UID %jd: %s", (intmax_t)getuid(), cmd);
 	closelog();
 }
 
