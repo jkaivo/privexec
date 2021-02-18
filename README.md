@@ -42,7 +42,7 @@ first column), or a directive. Directives are of the form:
 
     <keyword> <principal> [command]
 
-Where `<keyword>` is one of `authorized`, `authenticate`, or `deny`;
+Where `<keyword>` is one of `authorize`, `authenticate`, or `deny`;
 `<principal>` is either a username or a group name prepended with ':', and
 `[command]` is an optional command. Tokens must be separated by exactly one
 space. Additional white space is not allowed.
@@ -51,7 +51,7 @@ The entire configuration file is parsed whenever `privexec` invokes `check`.
 Any syntax errors will result in failure. Privilege checking is performed so
 as to be most restrictive. In order from least to most:
 
-    `authorized` - The user is authorized to execute the associate command
+    `authorize` - The user is authorized to execute the associate command
     without further interaction.
 
     `authenticate` - The user must authenticate themself before the command
@@ -63,15 +63,15 @@ A user name match has higher precedence than a group match, and a match
 containing a program name has higher precedence than a match without the
 program name. So the total ordering of precedence (from least to most) is:
 
-    authorized :group
+    authorize :group
     authenticate :group
     deny :group
-    authorized :group command
+    authorize :group command
     authenticate :group command
     deny :group command
-    authorized user
+    authorize user
     authenticate user
     deny user
-    authorized user command
+    authorize user command
     authenticate user command
     deny user command
