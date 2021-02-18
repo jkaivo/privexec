@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
 	log_execution(argc, argv);
 
 	setuid(geteuid());
+	setgid(0);
+
 	execvp(argv[1], argv + 1);
 	fprintf(stderr, "%s: %s: %s\n", argv[0], argv[1], strerror(errno));
 	if (errno == ENOENT) {
